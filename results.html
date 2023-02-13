@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Result</title>
+</head>
+
+<body>
+  <h1>Result</h1>
+  <div id="player1Name"></div>
+  <div id="player1Level"></div>
+  <div id="player2Name"></div>
+  <div id="player2Level"></div>
+  <button id="getResult">Get Result</button>
+
+  <button id="sendResults">Send Result</button>
+
+  <table id="ResultsCalculated">
+    <tr id="MatchState"></tr>
+    <tr>
+      <td></td>
+      <td>Set 1</td>
+      <td>Set 2</td>
+      <td>Set 3</td>
+      <td>Current Game</td>
+    </tr>
+
+    <tr>
+      <td id="player1Name4"></td>
+      <td id="player1Set1"></td>
+      <td id="player1Set2"></td>
+      <td id="player1Set3"></td>
+      <td id="player1CurrentGame"></td>
+    </tr>
+
+    <tr>
+      <td id="player2Name4"></td>
+      <td id="player2Set1"></td>
+      <td id="player2Set2"></td>
+      <td id="player2Set3"></td>
+      <td id="player2CurrentGame"></td>
+
+    </tr>
+
+  </table>
+  <ul id="gameResult"></ul>
+
+</body>
+<script>
+
+
+
+
+  const player1Name = localStorage.getItem("player1Name");
+  const player1Level = localStorage.getItem("player1Level");
+  const player2Name = localStorage.getItem("player2Name");
+  const player2Level = localStorage.getItem("player2Level");
+
+
+  document.getElementById("player1Name").innerHTML = `Player 1: ${player1Name}`;
+  document.getElementById("player1Level").innerHTML = `Level: ${player1Level}`;
+  document.getElementById("player2Name").innerHTML = `Player 2: ${player2Name}`;
+  document.getElementById("player2Level").innerHTML = `Level: ${player2Level}`;
+
+  document.getElementById("player1Name4").innerHTML = `${player1Name}`;
+  document.getElementById("player2Name4").innerHTML = `${player2Name}`;
+
+
+  const getResultButton = document.getElementById("getResult");
+
+
+  const sendResultsButton = document.getElementById("sendResults");
+
+  const resultContainer = document.getElementById("gameResult");
+
+
+  const playerAOneSet = document.getElementById("player1Set1");
+  const playerATwoSet = document.getElementById("player1Set2");
+  const playerAThreeSet = document.getElementById("player1Set3");
+  const playerARes = document.getElementById("player1CurrentGame");
+  
+  const playerBOne = document.getElementById("player2Set1");
+  const playerBTwo = document.getElementById("player2Set2");
+  const playerBThree = document.getElementById("player2Set3");
+  const playerBRes = document.getElementById("player2CurrentGame");
+
+  const matchState = document.getElementById("MatchState");
+
+  
+  var resultsReturned = [];
+
+
+  getResultButton.addEventListener("click", function () {
+
+    resultsReturned = [];
+    let index = 0;
+
+    let resultHTML = "";
+    
+    // Ici, Typescript serait plus adapté
+    ratio = player1Level / ((+player1Level) + (+player2Level));
+
+    while (index != 150) {
+      index += 1;
+      let randomValue = Math.random();
+
+      if (randomValue <= ratio) {
+        resultsReturned.push(player1Name);
+      } else {
+        resultsReturned.push(player2Name);
+      }
+
+    }
+
+
+    resultsReturned.forEach((result, index) => {
+      resultHTML += `<p>Point ${index+1} : remporté par ${result}</p>`;
+    });
+    resultContainer.innerHTML = resultHTML;
+  
+  
+  
+  });
+
+
+
+
+  sendResultsButton.addEventListener("click", function () {
+
+    const results = ResultsCalculated.innerHTML;
+
+    fetch("http://localhost:3000/sendResults", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ resultsReturned })
+    })
+      .then(response => response.json())
+      .then(data => {
+
+        /*
+        scoreA
+scoreB
+currentGame
+matchState
+
+        */
+
+        matchState.innerHTML = data.matchState;
+        playerAOneSet.innerHTML = data.player1Set[0];
+        playerATwoSet.innerHTML = data.player1Set[1];
+        playerAThreeSet.innerHTML = data.player1Set[2];
+        playerARes.innerHTML = data.currentGame[0];
+        playerBOne.innerHTML = data.player2Set[0];
+        playerBTwo.innerHTML = data.player2Set[1];
+        playerBThree.innerHTML = data.player2Set[2];
+        playerBRes.innerHTML = data.currentGame[1];
+
+      });
+  });
+</script>
+
+
+</html>

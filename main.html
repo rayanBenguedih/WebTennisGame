@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Form</title>
+</head>
+
+<body>
+    <form id="form">
+        <label for="player1Name">Entrez le nom du joueur 1:</label>
+        <input type="text" id="player1Name" name="player1Name">
+
+        <label for="player1Level">Entrez le niveau du joueur 1 (0-10):</label>
+        <input type="number" id="player1Level" name="player1Level" min="0" max="10">
+
+        <label for="player2Name">Entrez le niveau du joueur 2:</label>
+        <input type="text" id="player2Name" name="player2Name">
+
+        <label for="player2Level">Entrez le niveau du joueur 2 (0-10):</label>
+        <input type="number" id="player2Level" name="player2Level" min="0" max="10">
+
+        <input type="submit" value="Envoyer">
+    </form>
+
+    <script>
+        const form = document.getElementById('form');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const player1Name = document.getElementById('player1Name').value;
+            const player1Level = document.getElementById('player1Level').value;
+            const player2Name = document.getElementById('player2Name').value;
+            const player2Level = document.getElementById('player2Level').value;
+
+            
+            localStorage.setItem("player1Name", player1Name);
+            localStorage.setItem("player1Level", player1Level);
+            localStorage.setItem("player2Name", player2Name);
+            localStorage.setItem("player2Level", player2Level);
+
+
+            fetch('http://localhost:3000/saveData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    player1Name,
+                    player1Level,
+                    player2Name,
+                    player2Level
+                })
+            }).then(response => {
+                    console.log("player1NameDeuxFois: ", player1Name);
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+                    return response.json();
+                }).then(data => {
+                    
+                    console.log("player1NameDeuxMagiquesFois: ", player1Name);
+                    window.location.href = 'results';
+                }).catch(error => {
+                    
+                    console.log("player1NameTroisFois: ", player1Name);
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+
+</html>
